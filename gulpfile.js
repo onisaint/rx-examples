@@ -67,9 +67,8 @@ function initBundlerWatch(file) {
 }
 
 function createBundler(file) {
-    return browserify()
-        .plugin(tsify, { target: 'es6' })
-        .transform(babelify, { extensions: [ '.tsx', '.ts' ] });
+    return browserify(file)
+        .transform(babelify, {presets: ["es2015"]});
 }
 
 gulp.task("watch:scripts", gulp.parallel("watch:scripts:client", "watch:scripts:server"))
