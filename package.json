@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "nd": "nodemon --watch build",
+    "watch-all" : "node ./node_modules/gulp/bin/gulp.js watch:scripts",
     "watch": "node ./node_modules/gulp/bin/gulp.js  watch:scripts:server",
     "serve": "node ./node_modules/gulp/bin/gulp.js  scripts:server"
   },
