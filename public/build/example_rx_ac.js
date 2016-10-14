@@ -25785,17 +25785,29 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var $title = (0, _jQuery2.default)("#title");
 var $results = (0, _jQuery2.default)("#results");
 
-var keyup$ = _Rx2.default.Observable.fromEvent($title, "keyup");
-var queries$ = keyup$.map(function (e) {
+//short hand
+_Rx2.default.Observable.fromEvent($title, "keyup").map(function (e) {
     return e.target.value;
-}).distinctUntilChanged().debounceTime(250).switchMap(getItems);
-
-queries$.subscribe(function (items) {
+}).distinctUntilChanged().debounceTime(500).switchMap(getItems).subscribe(function (items) {
     $results.empty();
     $results.append(items.map(function (r) {
         return (0, _jQuery2.default)('<li />').text(r);
     }));
 });
+
+//long hand
+// const keyup$ = Rx.Observable.fromEvent($title, "keyup");
+// const queries$ = keyup$
+//     .map(e => e.target.value)
+//     .distinctUntilChanged()
+//     .debounceTime(250)
+//     .switchMap(getItems);
+
+// queries$.subscribe(items => {
+//     $results.empty();
+//     $results.append(items.map(r => $('<li />').text(r)));
+// });
+
 
 // ---------------------------------- \\
 
@@ -25804,7 +25816,7 @@ function getItems(title) {
     return new Promise(function (resolve, reject) {
         window.setTimeout(function () {
             resolve([title, "item 2", "another " + Math.random()]);
-        }, 500 + Math.random() * 1000);
+        }, 500 + Math.random() * 2000);
     });
 }
 
