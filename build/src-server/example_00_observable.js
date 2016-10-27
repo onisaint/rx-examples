@@ -1,5 +1,5 @@
-import Rx = require("rxjs/Rx");
-
+"use strict";
+var Rx = require("rxjs/Rx");
 //TODO: psrt 1
 // -------------------------------------------
 // const simple$ = new Rx.Observable(observer => {
@@ -12,17 +12,14 @@ import Rx = require("rxjs/Rx");
 //         }, 1000)
 //     }, 1000);
 // });
-
 // const error$ = new Rx.Observable(observer => {
 //     observer.error(new Error("WOHA !"));
 // });
-
 // simple$.subscribe(
 //     item => console.log('one.next' + item),
 //     error => console.log(`one.error ${error}`),
 //     () => console.log("one.complete")
 // );
-
 // setTimeout(() => {
 //     simple$.subscribe({
 //         next: item => console.log(`two.item` + item),
@@ -32,7 +29,6 @@ import Rx = require("rxjs/Rx");
 //         complete: () => console.log('two.complete')
 //     })
 // }, 3000);
-
 // error$.subscribe({
 //     next:() => {},
 //     error(err){
@@ -40,32 +36,28 @@ import Rx = require("rxjs/Rx");
 //     },
 //     complete:() => {}
 // })
-
 //TODO: part 2
 //-------------------------------------------------------
-function createInterval(time){
-    return new Rx.Observable(observer => {
-        let index = 0;
-        setInterval(() => {
+function createInterval(time) {
+    return new Rx.Observable(function (observer) {
+        var index = 0;
+        setInterval(function () {
             observer.next(index++);
         }, time);
-    })
+    });
 }
-
-function createSubscription(tag){
+function createSubscription(tag) {
     return {
-        next(item) {
-            console.log(`${tag}.next ${item}`)
+        next: function (item) {
+            console.log(tag + ".next " + item);
         },
-        error(err){
-            console.log(`${tag}.next ${err.stack || err}`);
+        error: function (err) {
+            console.log(tag + ".next " + (err.stack || err));
         },
-        complete(){
-            console.log(`${tag}.complete`);
+        complete: function () {
+            console.log(tag + ".complete");
         }
     };
 }
-
-
-const everySec$ = createInterval(1000);
+var everySec$ = createInterval(1000);
 everySec$.subscribe(createSubscription("one"));

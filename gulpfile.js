@@ -19,13 +19,13 @@ gulp.task('scripts:server', function() {
         .pipe($.cached("server"))
         .pipe(tsProject());
 
-    return tsResult.js.pipe(gulp.dest('./build'));
+    return tsResult.js.pipe(gulp.dest('./build/src-server/'));
 });
 
 gulp.task("watch:scripts:server", gulp.series(
     "scripts:server",
     function () {
-        return gulp.watch("./src-server/**/*.ts");
+        return gulp.watch("./src-server/**/*.ts", gulp.series("scripts:server"));
     }
 ));
 
