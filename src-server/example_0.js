@@ -47,9 +47,13 @@ import Rx from 'rxjs/Rx';
 function createIntrval(time){
     return new Rx.Observable(observer => {
         let index = 0;
-        setInterval(() => {
+        let interval = setInterval(() => {
             observer.next(index++);
         }, time);
+
+        return () => {
+            clearInterval(interval);
+        }
     });
 }
 
@@ -61,5 +65,27 @@ function createSubscriber(tag){
     };
 }
 
+function take$(sourceObservable$, amount){
+    return new Rx.Observable(observer => {
+        let cnt = 0;
+        const subscription = sourceObservable$.subscribe({
+            next(item) {
+                observer.next(item);
+                if(++cnt >= amount)
+                    observer.complete();
+            },
+            error(error) { observer.error(error)},
+            complete() { observer.complete() }
+        });
+
+        return () => subscription.unsubscribe();
+    })
+}
+
 const everySecond$ = createIntrval(1000);
-everySecond$.subscribe(createSubscriber("one"));
+const firstFiveSex$ = take$(everySecond$, 5);
+const subscription =  firstFiveSex$.subscribe(createSubscriber("one"));
+
+// setTimeout(() => {
+//     subscription.unsubscribe();
+// }, 3500);
