@@ -1,39 +1,28 @@
 "use strict";
-
-var gulp = require('gulp'),
+var gulp = require("gulp"),
     $ = require("gulp-load-plugins")(),
-    path = require("path"),
     source = require("vinyl-source-stream"),
     browserify = require("browserify"),
     watchify = require("watchify"),
-    gulp = require('gulp'),
-    ts = require('gulp-typescript'),
-    tsify = require("tsify"),
+    path = require("path"),
     fs = require("fs"),
-    babelify = require('babelify');
+    babelify = require("babelify");
 
-var tsProject = ts.createProject('tsconfig.json');
+gulp.task("scripts:server", () => {
+    return gulp.src("./src-server/**/*.js")
+        .pipe($.cached("server")) 
+        .pipe($.babel())
+        .pipe(gulp.dest("./build"));
+})
 
-gulp.task('scripts:server', function() {
-    var tsResult = tsProject.src("./src-server/**/*.ts") // instead of gulp.src(...)
-        .pipe($.cached("server"))
-        .pipe(tsProject());
+gulp.task("watch:scripts:server", gulp.series("scripts:server", () => {
+    return gulp.watch("./src-server/**/*.js", gulp.series("scripts:server"))
+}));
 
-    return tsResult.js.pipe(gulp.dest('./build/src-server/'));
-});
-
-gulp.task("watch:scripts:server", gulp.series(
-    "scripts:server",
-    function () {
-        return gulp.watch("./src-server/**/*.ts", gulp.series("scripts:server"));
-    }
-));
-
-gulp.task("watch:scripts:client", function () {
-    const files = fs.readdirSync('./src-client');
-
-    for(let i = 0; i < files.length; i++){
-         const file = files[i];
+gulp.task("watch:scripts:client", () => {
+    const files = fs.readdirSync("./src-client");
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         if(path.extname(file) !== ".js") continue;
 
         initBundlerWatch(path.join("src-client", file));
@@ -43,32 +32,35 @@ gulp.task("watch:scripts:client", function () {
         .on("change", initBundlerWatch);
 })
 
-var bundlers = {};
-function initBundlerWatch(file) {
-    if(bundlers.hasOwnProperty(file))
-        return;
+gulp.task("watch:scripts", gulp.parallel(
+    "watch:scripts:client",
+    "watch:scripts:server"));
+
+let bundlers = {};
+function initBundlerWatch(file){
+    if(bundlers.hasOwnProperty(file)) return;
 
     const bundler = createBundler(file);
+    bundlers[file] = bundler;
     const watcher = watchify(bundler);
-    const fileName = path.basename(file);
+    const filename = path.basename(file);
 
-    function bundle() {
+    function bundle(){
         return bundler
             .bundle()
-            .on("error", error => console.log(error))
-            .pipe(source(fileName))
-            .pipe(gulp.dest('./public/build'));
+            .on("error", error => console.error(error))
+            .pipe(source(filename))
+            .pipe(gulp.dest("./public/build"));
     }
 
     watcher.on("update", bundle);
-    watcher.on("time", time => console.log(`built client in ${time}ms`));
+    watcher.on("time", time => console.log(`B:C:${time}ms`));
 
     bundle();
 }
 
 function createBundler(file) {
-    return browserify(file)
-        .transform(babelify, {presets: ["es2015"]});
+    const bundler = browserify(file);
+    bundler.transform(babelify);
+    return bundler;
 }
-
-gulp.task("watch:scripts", gulp.parallel("watch:scripts:client", "watch:scripts:server"))

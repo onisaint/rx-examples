@@ -1,6 +1,4 @@
-import moment from "moment";
-import $ from "jQuery";
+import moment from 'moment';
+import $ from 'jquery';
 
-$("body").text(moment().format() + " wimbeldon");
-
-console.log("hello")
+$("body").text(moment().format());
