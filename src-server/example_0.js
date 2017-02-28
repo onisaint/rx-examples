@@ -82,8 +82,8 @@ function take$(sourceObservable$, amount){
     })
 }
 
-const everySecond$ = createIntrval(1000);
-const firstFiveSex$ = take$(everySecond$, 5);
+const everySecond$ = createIntrval(500);
+const firstFiveSex$ = take$(everySecond$, 3);
 const subscription =  firstFiveSex$.subscribe(createSubscriber("one"));
 
 // setTimeout(() => {
