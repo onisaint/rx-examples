@@ -7,4 +7,4 @@ reactive extension examples
 then use [nodemon](https://nodemon.io/) to watch on the build folder example
 ```nodemon build\example_0.js```
 
-and welcome to reactive programming
+and welcome to reactive programming and observer design
